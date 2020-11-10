@@ -13,9 +13,17 @@ import {
     userRegisterReducer,
     userDetailsReducer,
     userUpdateProfileReducer,
+    userListReducer,
+    userDeleteReducer,
+    userUpdateReducer,
 } from './reducers/userReducers'
 
-import { orderCreateReducers } from './reducers/orderReducers'
+import {
+    orderCreateReducer,
+    orderDetailsReducer,
+    orderPayReducer,
+    orderListMyReducer,
+} from './reducers/orderReducers'
 
 const reducer = combineReducers({
     // for products
@@ -39,8 +47,26 @@ const reducer = combineReducers({
     // user update profile
     userUpdateProfile: userUpdateProfileReducer,
 
+    // users list, from admin's view
+    userList: userListReducer,
+
+    // delete an user
+    userDelete: userDeleteReducer,
+
+    // update an user
+    userUpdate: userUpdateReducer,
+
     // order create
-    orderCreate: orderCreateReducers,
+    orderCreate: orderCreateReducer,
+
+    // order details
+    orderDetails: orderDetailsReducer,
+
+    // order pay
+    orderPay: orderPayReducer,
+
+    // order my list reducer
+    orderListMy: orderListMyReducer,
 })
 
 // cart operate the local storage items

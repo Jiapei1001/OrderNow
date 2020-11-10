@@ -51,6 +51,30 @@ const Header = () => {
                                     </Nav.Link>
                                 </LinkContainer>
                             )}
+
+                            {userInfo && userInfo.isAdmin && (
+                                <NavDropdown title='Admin' id='adminmenu'>
+                                    {/* from the api defined in app.js
+                                    as the UserListScreen */}
+                                    <LinkContainer to='/admin/userList'>
+                                        <NavDropdown.Item>
+                                            Users
+                                        </NavDropdown.Item>
+                                    </LinkContainer>
+                                    {/* products */}
+                                    <LinkContainer to='/admin/productlist'>
+                                        <NavDropdown.Item>
+                                            Products
+                                        </NavDropdown.Item>
+                                    </LinkContainer>
+                                    {/* orders */}
+                                    <LinkContainer to='/admin/orderlist'>
+                                        <NavDropdown.Item>
+                                            Orders
+                                        </NavDropdown.Item>
+                                    </LinkContainer>
+                                </NavDropdown>
+                            )}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

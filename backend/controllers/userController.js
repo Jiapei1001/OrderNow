@@ -1,3 +1,4 @@
+import expressAsyncHandler from 'express-async-handler'
 import asyncHandler from 'express-async-handler'
 import User from '../models/userModel.js'
 import generateToken from '../utils/generateToken.js'
@@ -95,6 +96,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             name: updatedUser.name,
             email: updatedUser.email,
             isAdmin: updatedUser.isAdmin,
+            token: generateToken(updateUser._id),
         })
     } else {
         res.status(401)
@@ -102,4 +104,75 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
 })
 
-export { authUser, registerUser, getUserProfile, updateUserProfile }
+// @desc  Get all users
+// @route GET /api/users
+// @access  Private/Admin
+const getUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({}) // pass in an empty object as we want to get all users
+    res.json(users)
+})
+
+// @desc  Delete an user
+// @route DELETE /api/users/:id
+// @access  Private/Admin
+const deleteUser = asyncHandler(async (req, res) => {
+    // NOTE: here is NOT req.params._id, OR the admin will be deleted!!!!!!
+    // MUST BE req.params.id
+    const user = await User.findById(req.params.id)
+    if (user) {
+        await user.remove()
+        res.json({ message: 'User removed' })
+    } else {
+        res.status(401)
+        throw new Error('User not found')
+    }
+})
+
+// @desc  Get an user by id
+// @route GET /api/users/:id
+// @access  Private/Admin
+const getUserById = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id).select('-password')
+
+    if (user) {
+        res.json(user)
+    } else {
+        res.status(401)
+        throw new Error('User not found')
+    }
+})
+
+// @desc  UPDATE an user
+// @route PUT /api/users/:id
+// @access  Private/Admin
+const updateUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id)
+    if (user) {
+        user.name = req.body.name || user.name
+        user.email = req.body.email || user.email
+        user.isAdmin = req.body.isAdmin
+
+        const updatedUser = await user.save()
+
+        res.json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            isAdmin: updatedUser.isAdmin,
+        })
+    } else {
+        res.status(401)
+        throw new Error('User not found')
+    }
+})
+
+export {
+    authUser,
+    registerUser,
+    getUserProfile,
+    updateUserProfile,
+    getUsers,
+    deleteUser,
+    getUserById,
+    updateUser,
+}
