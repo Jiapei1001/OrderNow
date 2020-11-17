@@ -3,12 +3,15 @@ import {
     addOrderItems,
     getOrderById,
     updateOrderToPaid,
+    updateOrderToDelivered,
     getMyOrders,
+    getOrders,
+    deleteOrder,
 } from '../controllers/orderController.js'
-import { protect } from '../middleware/authMiddleWare.js'
+import { protect, admin } from '../middleware/authMiddleWare.js'
 
 const router = express.Router()
-router.route('/').post(protect, addOrderItems)
+router.route('/').post(protect, addOrderItems).get(protect, admin, getOrders)
 
 /* the sequence of myorders and :id is important!!!
 Hi,
@@ -40,9 +43,15 @@ router.route("/myorders").get(protect, getMyOrders);   */
 router.route('/myorders').get(protect, getMyOrders)
 
 // get order by id's route
-router.route('/:id').get(protect, getOrderById)
+router
+    .route('/:id')
+    .get(protect, getOrderById)
+    .delete(protect, admin, deleteOrder)
 
 // put paid order to data base, and route to payment
 router.route('/:id/pay').put(protect, updateOrderToPaid)
+
+// put out of devlier order to data base, and update the order in database
+router.route('/:id/deliver').put(protect, admin, updateOrderToDelivered)
 
 export default router

@@ -4,6 +4,11 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import {
     productListReducer,
     productDetailsReducer,
+    productDeleteReducer,
+    productCreateReducer,
+    productUpdateReducer,
+    productCreateReviewReducer,
+    productTopRatedReducer,
 } from './reducers/productReducers'
 
 import { cartReducer } from './reducers/cartReducers'
@@ -22,7 +27,9 @@ import {
     orderCreateReducer,
     orderDetailsReducer,
     orderPayReducer,
+    orderDeliverReducer,
     orderListMyReducer,
+    orderListReducer,
 } from './reducers/orderReducers'
 
 const reducer = combineReducers({
@@ -31,6 +38,21 @@ const reducer = combineReducers({
 
     // for single product
     productDetails: productDetailsReducer,
+
+    // delete product
+    productDelete: productDeleteReducer,
+
+    // create product
+    productCreate: productCreateReducer,
+
+    // update product
+    productUpdate: productUpdateReducer,
+
+    // create a product review
+    productReviewCreate: productCreateReviewReducer,
+
+    // get top products
+    productTopRated: productTopRatedReducer,
 
     // cart
     cart: cartReducer,
@@ -65,8 +87,14 @@ const reducer = combineReducers({
     // order pay
     orderPay: orderPayReducer,
 
+    // order deliver
+    orderDeliver: orderDeliverReducer,
+
     // order my list reducer
     orderListMy: orderListMyReducer,
+
+    // all order list reducer
+    orderList: orderListReducer,
 })
 
 // cart operate the local storage items

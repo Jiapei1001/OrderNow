@@ -4,14 +4,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Table, Button } from 'react-bootstrap'
 import Message from '../component/Message'
 import Loader from '../component/Loader'
-import { listUsers, deleteUser } from '../actions/userActions'
+import { listOrders } from '../actions/orderActions'
 
-const UserListScreen = ({ history }) => {
+const OrderListScreen = ({ history }) => {
     const dispatch = useDispatch()
 
     // from the store.js
-    const userList = useSelector((state) => state.userList)
-    const { loading, error, users } = userList
+    const orderList = useSelector((state) => state.orderList)
+    const { loading, error, orders } = orderList
 
     // to avoid the admin still shows
     // when the admin is logged out
@@ -19,32 +19,20 @@ const UserListScreen = ({ history }) => {
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
-    // delete an user
-    const userDelete = useSelector((state) => state.userDelete)
-    // only get success, and rename it as successDelete
-    const { success: successDelete } = userDelete
-
     // dispatch userActions
     useEffect(() => {
         if (userInfo && userInfo.isAdmin) {
-            dispatch(listUsers())
+            dispatch(listOrders())
         }
         // when someone is not admin, and input api/admin/userlist
         else {
             history.push('/login')
         }
-    }, [dispatch, history, userInfo, successDelete])
-
-    const deleteHandler = (id) => {
-        // pop up a window to confirm
-        if (window.confirm('Are you sure?')) {
-            dispatch(deleteUser(id))
-        }
-    }
+    }, [dispatch, history, userInfo])
 
     return (
         <>
-            <h1>Users</h1>
+            <h1>Orders</h1>
             {loading ? (
                 <Loader />
             ) : error ? (
@@ -55,30 +43,27 @@ const UserListScreen = ({ history }) => {
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>NAME</th>
-                            <th>EMAIL</th>
-                            <th>ADMIN</th>
+                            <th>USER</th>
+                            <th>DATE</th>
+                            <th>TOTAL</th>
+                            <th>PAID</th>
+                            <th>DELIVERED</th>
                             <th></th>
                         </tr>
                     </thead>
                     {/* table body */}
                     <tbody>
                         {/* from the upper 'users' variable from 'userList'  */}
-                        {users.map((user) => (
-                            <tr key={user._id}>
-                                <td>{user._id}</td>
-                                <td>{user.name}</td>
+                        {orders.map((order) => (
+                            <tr key={order._id}>
+                                <td>{order._id}</td>
+                                <td>{order.user && order.user.name}</td>
+                                <td>{order.createdAt.substring(0, 10)}</td>
+                                <td>{order.totalPrice}</td>
+
                                 <td>
-                                    <a href={`mailto:${user.email}`}>
-                                        {user.email}
-                                    </a>
-                                </td>
-                                <td>
-                                    {user.isAdmin ? (
-                                        <i
-                                            className='fas fa-check'
-                                            style={{ color: 'green' }}
-                                        ></i>
+                                    {order.isPaid ? (
+                                        order.paidAt.substring(0, 10)
                                     ) : (
                                         <i
                                             className='fas fa-times'
@@ -86,24 +71,27 @@ const UserListScreen = ({ history }) => {
                                         ></i>
                                     )}
                                 </td>
+
                                 <td>
-                                    <LinkContainer
-                                        to={`/admin/user/${user._id}/edit`}
-                                    >
+                                    {order.isDelivered ? (
+                                        order.deliveredAt.substring(0, 10)
+                                    ) : (
+                                        <i
+                                            className='fas fa-times'
+                                            style={{ color: 'red' }}
+                                        ></i>
+                                    )}
+                                </td>
+
+                                <td>
+                                    <LinkContainer to={`/order/${order._id}`}>
                                         <Button
                                             variant='light'
                                             className='btn-sm'
                                         >
-                                            <i className='fas fa-edit'></i>
+                                            Details
                                         </Button>
                                     </LinkContainer>
-                                    <Button
-                                        variant='danger'
-                                        clas='btn-sm'
-                                        onClick={() => deleteHandler(user._id)}
-                                    >
-                                        <i className='fas fa-trash'></i>
-                                    </Button>
                                 </td>
                             </tr>
                         ))}
@@ -114,4 +102,4 @@ const UserListScreen = ({ history }) => {
     )
 }
 
-export default UserListScreen
+export default OrderListScreen

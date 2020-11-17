@@ -82,6 +82,23 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc    Update order to delivered
+// @route   PUT /api/orders/:id/deliver
+// @access  Private
+const updateOrderToDelivered = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id)
+    if (order) {
+        order.isDelivered = true
+        order.deliveredAt = Date.now()
+        const updatedOrder = await order.save()
+
+        res.json(updatedOrder)
+    } else {
+        res.status(404)
+        throw new Error('Order not found')
+    }
+})
+
 // @desc    Get logged in user orders
 // @route   GET /api/orders/myorders
 // @access  Private
@@ -90,4 +107,36 @@ const getMyOrders = asyncHandler(async (req, res) => {
     res.json(orders)
 })
 
-export { addOrderItems, getOrderById, updateOrderToPaid, getMyOrders }
+// @desc    Get all orders
+// @route   GET /api/orders
+// @access  Private/Admin
+const getOrders = asyncHandler(async (req, res) => {
+    const orders = await Order.find({}).populate('user', 'id name')
+    res.json(orders)
+})
+
+// @desc  delete an order
+// @route Delete /api/orders/:id
+// @access  Private/Admin
+const deleteOrder = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id)
+    if (order) {
+        await order.remove()
+        res.json({ message: 'Order removed' })
+    } else {
+        res.status(404)
+        throw new Error('Order not found')
+        // below is the default method, when there is no customized error catcher 'errorMiddleWare.js'
+        // res.status(404).json({ message: 'Product not found' });
+    }
+})
+
+export {
+    addOrderItems,
+    getOrderById,
+    updateOrderToPaid,
+    getMyOrders,
+    getOrders,
+    updateOrderToDelivered,
+    deleteOrder,
+}
